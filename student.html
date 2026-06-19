@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - Student Info</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header with Date and Time -->
+    <header class="header">
+        <div class="header-container">
+            <h1 class="header-title">Student Registration System</h1>
+            <div class="date-time" id="dateTime"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="form-card">
+            <!-- Progress Indicator -->
+            <div class="progress-container">
+                <div class="progress-step">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Welcome</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step active">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Student Info</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Academic</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Summary</div>
+                </div>
+            </div>
+
+            <!-- Form Content -->
+            <div class="form-content">
+                <h2>Student Information</h2>
+                <p class="form-subtitle">Please fill in your basic details</p>
+
+                <form id="studentForm" name="studentForm">
+                    <!-- Branch -->
+                    <div class="form-group">
+                        <label for="branch" class="form-label">Branch <span class="required">*</span></label>
+                        <select id="branch" name="branch" class="form-control" required>
+                            <option value="">Select Branch</option>
+                            <option value="CSE">Computer Science & Engineering</option>
+                            <option value="ECE">Electronics & Communication</option>
+                            <option value="ME">Mechanical Engineering</option>
+                            <option value="CE">Civil Engineering</option>
+                            <option value="EE">Electrical Engineering</option>
+                        </select>
+                        <span class="error-message" id="branchError"></span>
+                    </div>
+
+                    <!-- Roll Number -->
+                    <div class="form-group">
+                        <label for="rollNumber" class="form-label">Roll Number <span class="required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="rollNumber" 
+                            name="rollNumber" 
+                            class="form-control" 
+                            placeholder="e.g., CS001" 
+                            required
+                        >
+                        <span class="error-message" id="rollNumberError"></span>
+                    </div>
+
+                    <!-- Student Name -->
+                    <div class="form-group">
+                        <label for="studentName" class="form-label">Student Name <span class="required">*</span></label>
+                        <input 
+                            type="text" 
+                            id="studentName" 
+                            name="studentName" 
+                            class="form-control" 
+                            placeholder="Enter your full name" 
+                            required
+                        >
+                        <span class="error-message" id="studentNameError"></span>
+                    </div>
+
+                    <!-- Form Navigation -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="goToPrevious()">
+                            <span>&larr;</span> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="validateAndProceed()">
+                            Next <span>&rarr;</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Student Registration System. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Display current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('dateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Load saved data on page load
+        function loadStudentData() {
+            const branch = getCookie('branch');
+            const rollNumber = getCookie('rollNumber');
+            const studentName = getCookie('studentName');
+
+            if (branch) document.getElementById('branch').value = branch;
+            if (rollNumber) document.getElementById('rollNumber').value = rollNumber;
+            if (studentName) document.getElementById('studentName').value = studentName;
+        }
+
+        // Validate student form
+        function validateStudentForm() {
+            // Clear previous errors
+            clearErrors();
+
+            const branch = document.getElementById('branch').value.trim();
+            const rollNumber = document.getElementById('rollNumber').value.trim();
+            const studentName = document.getElementById('studentName').value.trim();
+
+            let isValid = true;
+
+            // Validate Branch
+            if (!branch) {
+                showError('branchError', 'Please select a branch');
+                isValid = false;
+            }
+
+            // Validate Roll Number (alphanumeric only)
+            if (!rollNumber) {
+                showError('rollNumberError', 'Roll number is required');
+                isValid = false;
+            } else if (!/^[a-zA-Z0-9]+$/.test(rollNumber)) {
+                showError('rollNumberError', 'Roll number must be alphanumeric');
+                isValid = false;
+            }
+
+            // Validate Student Name (letters and spaces only)
+            if (!studentName) {
+                showError('studentNameError', 'Student name is required');
+                isValid = false;
+            } else if (!/^[a-zA-Z\s]+$/.test(studentName)) {
+                showError('studentNameError', 'Student name should contain only letters and spaces');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Validate and proceed to next page
+        function validateAndProceed() {
+            if (validateStudentForm()) {
+                // Save data to cookies
+                setCookie('branch', document.getElementById('branch').value, 7);
+                setCookie('rollNumber', document.getElementById('rollNumber').value, 7);
+                setCookie('studentName', document.getElementById('studentName').value, 7);
+
+                // Navigate to next page
+                window.location.href = 'academic.html';
+            }
+        }
+
+        // Go to previous page
+        function goToPrevious() {
+            // Save data before going back
+            setCookie('branch', document.getElementById('branch').value, 7);
+            setCookie('rollNumber', document.getElementById('rollNumber').value, 7);
+            setCookie('studentName', document.getElementById('studentName').value, 7);
+            window.location.href = 'index.html';
+        }
+
+        // Clear error messages
+        function clearErrors() {
+            document.getElementById('branchError').textContent = '';
+            document.getElementById('rollNumberError').textContent = '';
+            document.getElementById('studentNameError').textContent = '';
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            document.getElementById(elementId).textContent = message;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            loadStudentData();
+        });
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>

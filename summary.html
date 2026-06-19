@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - Summary</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header with Date and Time -->
+    <header class="header">
+        <div class="header-container">
+            <h1 class="header-title">Student Registration System</h1>
+            <div class="date-time" id="dateTime"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="form-card">
+            <!-- Progress Indicator -->
+            <div class="progress-container">
+                <div class="progress-step">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Welcome</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Student Info</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Academic</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step active">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Summary</div>
+                </div>
+            </div>
+
+            <!-- Summary Content -->
+            <div class="form-content">
+                <h2>Registration Summary</h2>
+                <p class="form-subtitle">Review your information before submission</p>
+
+                <!-- Summary Table -->
+                <div class="summary-table-wrapper">
+                    <table class="summary-table">
+                        <tbody id="summaryTableBody">
+                            <!-- Dynamically populated -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Success Message (Hidden by default) -->
+                <div id="successMessage" class="success-message" style="display: none;">
+                    <h3>✓ Registration Successful!</h3>
+                    <p>Your registration has been submitted successfully.</p>
+                    <button class="btn btn-secondary" onclick="goHome()">Go to Home</button>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions" id="formActions">
+                    <button type="button" class="btn btn-secondary" onclick="goToPrevious()">
+                        <span>&larr;</span> Previous
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="clearAllData()">
+                        Clear All Data
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="editInfo()">
+                        Edit Information
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="submitRegistration()">
+                        Submit <span>&check;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Student Registration System. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Display current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('dateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Display summary from cookies
+        function displaySummary() {
+            const summaryData = {
+                'Branch': getCookie('branch') || 'N/A',
+                'Roll Number': getCookie('rollNumber') || 'N/A',
+                'Student Name': getCookie('studentName') || 'N/A',
+                'Email': getCookie('email') || 'N/A',
+                'Mobile Number': getCookie('mobile') || 'N/A',
+                'Address': getCookie('address') || 'N/A',
+                'Semester': getCookie('semester') || 'N/A',
+                'Section': getCookie('section') || 'N/A'
+            };
+
+            const tableBody = document.getElementById('summaryTableBody');
+            tableBody.innerHTML = '';
+
+            for (const [key, value] of Object.entries(summaryData)) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="label">${key}</td>
+                    <td class="value">${value}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+        }
+
+        // Go to previous page (edit student info)
+        function goToPrevious() {
+            window.location.href = 'student.html';
+        }
+
+        // Edit information
+        function editInfo() {
+            window.location.href = 'student.html';
+        }
+
+        // Clear all data with confirmation
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                // Delete all cookies
+                deleteCookie('branch');
+                deleteCookie('rollNumber');
+                deleteCookie('studentName');
+                deleteCookie('email');
+                deleteCookie('mobile');
+                deleteCookie('address');
+                deleteCookie('semester');
+                deleteCookie('section');
+
+                // Show confirmation
+                alert('All data has been cleared.');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Submit registration
+        function submitRegistration() {
+            // Hide form actions
+            document.getElementById('formActions').style.display = 'none';
+
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+        }
+
+        // Go home
+        function goHome() {
+            // Clear all cookies before going home
+            deleteCookie('branch');
+            deleteCookie('rollNumber');
+            deleteCookie('studentName');
+            deleteCookie('email');
+            deleteCookie('mobile');
+            deleteCookie('address');
+            deleteCookie('semester');
+            deleteCookie('section');
+
+            window.location.href = 'index.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            displaySummary();
+        });
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>

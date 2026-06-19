@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration - Academic Info</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header with Date and Time -->
+    <header class="header">
+        <div class="header-container">
+            <h1 class="header-title">Student Registration System</h1>
+            <div class="date-time" id="dateTime"></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="form-card">
+            <!-- Progress Indicator -->
+            <div class="progress-container">
+                <div class="progress-step">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Welcome</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Student Info</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step active">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Academic</div>
+                </div>
+                <div class="progress-line"></div>
+                <div class="progress-step">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Summary</div>
+                </div>
+            </div>
+
+            <!-- Form Content -->
+            <div class="form-content">
+                <h2>Academic Information</h2>
+                <p class="form-subtitle">Please fill in your academic details</p>
+
+                <form id="academicForm" name="academicForm">
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email <span class="required">*</span></label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            class="form-control" 
+                            placeholder="your.email@university.edu" 
+                            required
+                        >
+                        <span class="error-message" id="emailError"></span>
+                    </div>
+
+                    <!-- Mobile Number -->
+                    <div class="form-group">
+                        <label for="mobile" class="form-label">Mobile Number <span class="required">*</span></label>
+                        <input 
+                            type="tel" 
+                            id="mobile" 
+                            name="mobile" 
+                            class="form-control" 
+                            placeholder="10-digit number" 
+                            required
+                        >
+                        <span class="error-message" id="mobileError"></span>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="form-group">
+                        <label for="address" class="form-label">Address <span class="required">*</span></label>
+                        <textarea 
+                            id="address" 
+                            name="address" 
+                            class="form-control form-textarea" 
+                            placeholder="Enter your full address" 
+                            rows="3" 
+                            required
+                        ></textarea>
+                        <span class="error-message" id="addressError"></span>
+                    </div>
+
+                    <!-- Semester -->
+                    <div class="form-group">
+                        <label for="semester" class="form-label">Semester <span class="required">*</span></label>
+                        <select id="semester" name="semester" class="form-control" required>
+                            <option value="">Select Semester</option>
+                            <option value="1">1st Semester</option>
+                            <option value="2">2nd Semester</option>
+                            <option value="3">3rd Semester</option>
+                            <option value="4">4th Semester</option>
+                            <option value="5">5th Semester</option>
+                            <option value="6">6th Semester</option>
+                            <option value="7">7th Semester</option>
+                            <option value="8">8th Semester</option>
+                        </select>
+                        <span class="error-message" id="semesterError"></span>
+                    </div>
+
+                    <!-- Section -->
+                    <div class="form-group">
+                        <label for="section" class="form-label">Section <span class="required">*</span></label>
+                        <select id="section" name="section" class="form-control" required>
+                            <option value="">Select Section</option>
+                            <option value="A">Section A</option>
+                            <option value="B">Section B</option>
+                            <option value="C">Section C</option>
+                            <option value="D">Section D</option>
+                        </select>
+                        <span class="error-message" id="sectionError"></span>
+                    </div>
+
+                    <!-- Form Navigation -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="goToPrevious()">
+                            <span>&larr;</span> Previous
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="validateAndProceed()">
+                            Next <span>&rarr;</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Student Registration System. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Display current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('dateTime').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Load saved data on page load
+        function loadAcademicData() {
+            const email = getCookie('email');
+            const mobile = getCookie('mobile');
+            const address = getCookie('address');
+            const semester = getCookie('semester');
+            const section = getCookie('section');
+
+            if (email) document.getElementById('email').value = email;
+            if (mobile) document.getElementById('mobile').value = mobile;
+            if (address) document.getElementById('address').value = address;
+            if (semester) document.getElementById('semester').value = semester;
+            if (section) document.getElementById('section').value = section;
+        }
+
+        // Validate email
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // Validate academic form
+        function validateAcademicForm() {
+            // Clear previous errors
+            clearErrors();
+
+            const email = document.getElementById('email').value.trim();
+            const mobile = document.getElementById('mobile').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const semester = document.getElementById('semester').value.trim();
+            const section = document.getElementById('section').value.trim();
+
+            let isValid = true;
+
+            // Validate Email
+            if (!email) {
+                showError('emailError', 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('emailError', 'Please enter a valid email address');
+                isValid = false;
+            }
+
+            // Validate Mobile Number (exactly 10 digits)
+            if (!mobile) {
+                showError('mobileError', 'Mobile number is required');
+                isValid = false;
+            } else if (!/^\d{10}$/.test(mobile)) {
+                showError('mobileError', 'Mobile number must contain exactly 10 digits');
+                isValid = false;
+            }
+
+            // Validate Address
+            if (!address) {
+                showError('addressError', 'Address is required');
+                isValid = false;
+            }
+
+            // Validate Semester
+            if (!semester) {
+                showError('semesterError', 'Please select a semester');
+                isValid = false;
+            }
+
+            // Validate Section
+            if (!section) {
+                showError('sectionError', 'Please select a section');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Validate and proceed to summary
+        function validateAndProceed() {
+            if (validateAcademicForm()) {
+                // Save data to cookies
+                setCookie('email', document.getElementById('email').value, 7);
+                setCookie('mobile', document.getElementById('mobile').value, 7);
+                setCookie('address', document.getElementById('address').value, 7);
+                setCookie('semester', document.getElementById('semester').value, 7);
+                setCookie('section', document.getElementById('section').value, 7);
+
+                // Navigate to summary page
+                window.location.href = 'summary.html';
+            }
+        }
+
+        // Go to previous page
+        function goToPrevious() {
+            // Save data before going back
+            setCookie('email', document.getElementById('email').value, 7);
+            setCookie('mobile', document.getElementById('mobile').value, 7);
+            setCookie('address', document.getElementById('address').value, 7);
+            setCookie('semester', document.getElementById('semester').value, 7);
+            setCookie('section', document.getElementById('section').value, 7);
+            window.location.href = 'student.html';
+        }
+
+        // Clear error messages
+        function clearErrors() {
+            document.getElementById('emailError').textContent = '';
+            document.getElementById('mobileError').textContent = '';
+            document.getElementById('addressError').textContent = '';
+            document.getElementById('semesterError').textContent = '';
+            document.getElementById('sectionError').textContent = '';
+        }
+
+        // Show error message
+        function showError(elementId, message) {
+            document.getElementById(elementId).textContent = message;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDateTime();
+            loadAcademicData();
+        });
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>
